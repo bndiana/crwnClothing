@@ -4,6 +4,8 @@ import {
   signInWithRedirect,
   signInWithPopup,
   GoogleAuthProvider,
+  FacebookAuthProvider,
+  createUserWithEmailAndPassword,
 } from "firebase/auth";
 
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
@@ -23,20 +25,31 @@ const firebaseApp = initializeApp(firebaseConfig);
 
 //GoogleAuthProvider = class that we get from  Firebase Authentication and it's connected to Google Auth itself
 //can have diff proverders ex: one for SignInWithPopup and another for SignInWithRedirect
+// a provider can be Google or Facebook or Github etc
 const provider = new GoogleAuthProvider();
 
 provider.setCustomParameters({
   prompt: "select_account",
 });
 
-//same autentication from an App
+//same autentication from an App throughout all sign in methods
+//with auth we can keep track if the user are correctly authenticated or not
 export const auth = getAuth();
 export const signInWithGooglePopup = () => signInWithPopup(auth, provider);
+export const signInWithGoogleRedirect = () =>
+  signInWithRedirect(auth, provider);
 
-//directly points to out DB
+//directly points to our DB
 export const database = getFirestore();
 
-export const createUserDocumentFromAuth = async (userAuth) => {
+export const createUserDocumentFromAuth = async (
+  userAuth,
+  additionalInfo = {
+    // displayName:
+    //   "Additional Name that overwrites is initial displayName is empty",
+  }
+) => {
+  if (!userAuth) return;
   //function that gets the data from the authentication and store it inside of Firestore
 
   //first we need to see if there's an existing document reference
@@ -62,6 +75,7 @@ export const createUserDocumentFromAuth = async (userAuth) => {
         displayName,
         email,
         createdAt,
+        ...additionalInfo,
       });
     } catch (error) {
       console.log("error creating user", error.message);
@@ -69,4 +83,10 @@ export const createUserDocumentFromAuth = async (userAuth) => {
   }
   //if user data exists return userDocRef
   return userDocRef;
+};
+
+export const createAuthUserWithEmailAndPassword = async (email, password) => {
+  if (!email || !password) return;
+  //   return await createUserDocumentFromAuth(auth, email, password);
+  return await createUserWithEmailAndPassword(auth, email, password);
 };
