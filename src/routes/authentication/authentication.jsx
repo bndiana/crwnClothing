@@ -8,8 +8,10 @@ import {
 import { useEffect } from "react";
 import { getRedirectResult } from "firebase/auth";
 import SignUpForm from "../../components/sign-up-form/signUpForm.jsx";
+import SignInForm from "../../components/sign-in-form/signInForm";
+import "./authentication.styles.scss";
 
-const SignIn = () => {
+const Authentication = () => {
   //we use useEfefct() when signing in with redirect to be able to store the UserCredentialImpl which would dissapear because of unmounting when redirecting
   useEffect(() => {
     const fetchData = async () => {
@@ -24,16 +26,17 @@ const SignIn = () => {
     fetchData();
   }, []);
   //empty array => run the function just once when the component is being mounted
-  //it will run when mountinga as well when we get back to the sign in page after the redirect
+  //it will run when mounting as well when we get back to the sign in page after the redirect
 
-  //whenever you make a call to a DB it's gonna be async
-  const logGoogleUser = async () => {
-    const response = await signInWithGooglePopup();
-    //Open console in browser => UserCredentialImpl obj => accessToken
-    console.log("response", response);
+  //Moved to SignInForm
+  // //whenever you make a call to a DB it's gonna be async
+  // const logGoogleUser = async () => {
+  //   const response = await signInWithGooglePopup();
+  //   //Open console in browser => UserCredentialImpl obj => accessToken
+  //   console.log("response", response);
 
-    const userDocRef = await createUserDocumentFromAuth(response.user);
-  };
+  //   const userDocRef = await createUserDocumentFromAuth(response.user);
+  // };
 
   //   const logGoogleRedirectUser = async () => {
   //     const response = await signInWithGoogleRedirect();
@@ -46,20 +49,22 @@ const SignIn = () => {
   //   };
 
   return (
-    <div>
-      <h1>Sign in page</h1>
-      <button onClick={logGoogleUser}>Sign in with Google Popup</button>
+    <div className="authentication-container">
+      {/* <button onClick={logGoogleUser}>Sign in with Google Popup</button> */}
       {/* 
       If uncommented it has use for the useEffect above
       <button onClick={signInWithGoogleRedirect}>
         Sign in with Google Redirect
       </button> */}
+
       {/* <button onClick={logGoogleRedirectUser}>
         Sign in with Google Redirect
       </button> */}
+
+      <SignInForm />
       <SignUpForm />
     </div>
   );
 };
 
-export default SignIn;
+export default Authentication;
